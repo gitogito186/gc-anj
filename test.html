@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xyree Chat Telegram</title>
+  <style>
+    :root {
+      --accent: #2CF878;
+      --text: #fff;
+      --card: rgba(20,20,40,0.6);
+      --bubble-user: #2CF878;
+      --bubble-bot: rgba(0,0,0,0.6);
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: url("https://files.catbox.moe/vbysuh.jpg") center/cover no-repeat;
+      background-attachment: fixed;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .app {
+      width: 95%;
+      max-width: 450px;
+      height: 92vh;
+      border-radius: 22px;
+      backdrop-filter: blur(14px) saturate(180%);
+      background: var(--card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 6px 30px rgba(0,0,0,0.7);
+    }
+
+    /* Header IG Story */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .status-bar img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      padding: 2px;
+      object-fit: cover;
+    }
+
+    .status-info {
+      flex: 1;
+    }
+
+    .status-info h4 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .status-info p {
+      margin: 0;
+      font-size: 12px;
+      color: #ddd;
+    }
+
+    /* Chat */
+    .chat-box {
+      flex: 1;
+      padding: 11px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      margin: 6px 0;
+      border-radius: 18px;
+      font-size: 14px;
+      animation: fadeIn 0.3s ease;
+      word-wrap: break-word;
+    }
+
+    .bubble img {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-bottom: 6px;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: var(--bubble-user);
+      color: #fff;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background: var(--bubble-bot);
+      color: #fff;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Input */
+    .input-area {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(10px);
+      gap: 8px;
+    }
+
+    .input-area input[type="text"] {
+      padding: 10px;
+      border: none;
+      border-radius: 14px;
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    .input-area input::placeholder {
+      color: #aaa;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .input-area input[type="file"] {
+      display: none;
+    }
+
+    .input-area label {
+      background: var(--accent);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      color: #fff;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .input-area button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 14px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .input-area button:hover {
+      opacity: 0.10;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 25px;
+      height: 20px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 1000;
+    }
+
+    .hamburger div {
+      background: var(--text);
+      height: 3px;
+      border-radius: 5px;
+    }
+
+    .menu {
+      display: none;
+      position: absolute;
+      top: 60px;
+      right: 15px;
+      background: rgba(0,0,0,0.85);
+      padding: 12px;
+      border-radius: 14px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.6);
+      z-index: 999;
+      backdrop-filter: blur(10px);
+    }
+
+    .menu button {
+      width: 100%;
+      margin: 6px 0;
+      padding: 8px;
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <div class="status-bar">
+      <img src="https://files.catbox.moe/31a2ii.jpg" alt="Owner">
+      <div class="status-info">
+        <h4>Xyree</h4>
+        <p>Online sekarang</p>
+      </div>
+    </div>
+
+    <!-- Menu -->
+    <div class="hamburger" onclick="toggleMenu()">
+      <div></div><div></div><div></div>
+    </div>
+
+    <div class="menu" id="menu">
+      <button onclick="openLink('https://github.com/gitogito186')">GitHub</button>
+      <button onclick="openLink('https://youtube.com/Ovcynaa')">YouTube</button>
+      <button onclick="openLink('https://t.me/xyreky')">Telegram</button>
+      <button onclick="openLink('https://t.me/channel')">Channel Information</button>
+      <button onclick="toggleMusic()">🎵 Music On/Off</button>
+    </div>
+
+    <!-- Chat -->
+    <div class="chat-box" id="chat-box">
+      <div class="bubble bot">( 👋 )Halo, isi username dulu lalu kirim request (bisa teks + foto)!</div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <input type="text" id="username" placeholder="Masukkan Username Telegram (@username)">
+      <div class="input-row">
+        <label for="fileInput">=</label>
+        <input type="file" id="fileInput" accept="image/*">
+        <input type="text" id="userMessage" placeholder="Tulis pesan...">
+        <button onclick="sendMessage()">Kirim</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Music -->
+  <audio id="bgMusic" loop>
+    <source src="https://files.catbox.moe/ql4z7r.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const menu = document.getElementById("menu");
+    const fileInput = document.getElementById("fileInput");
+    const music = document.getElementById("bgMusic");
+
+    const BOT_TOKEN = "8396767351:AAH6_Jl1Pk20kXTf6HawxHEKI6TFgYkbMnM";
+    const CHAT_ID = "6971470829";
+
+    function toggleMenu() {
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function openLink(url) {
+      window.open(url, "_blank");
+    }
+
+    function toggleMusic() {
+      if (music.paused) {
+        music.play();
+      } else {
+        music.pause();
+      }
+    }
+
+    function appendMessage(msg, type, imgUrl=null) {
+      let div = document.createElement("div");
+      div.className = "bubble " + type;
+      if(imgUrl){
+        const img = document.createElement("img");
+        img.src = imgUrl;
+        div.appendChild(img);
+      }
+      if(msg) div.appendChild(document.createTextNode(msg));
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const username = document.getElementById("username").value.trim();
+      const msg = document.getElementById("userMessage").value.trim();
+      const file = fileInput.files[0];
+
+      if (!username) {
+        appendMessage("⚠️ Harap isi username dulu.", "bot");
+        return;
+      }
+      if (!msg && !file) return;
+
+      appendMessage(`@${username}: ${msg}`, "user", file ? URL.createObjectURL(file) : null);
+
+      document.getElementById("userMessage").value = "";
+      fileInput.value = "";
+
+      try {
+        let textTemplate = 
+`📩 Request Baru!
+👤 Username: ${username}
+✏️ Pesan: ${msg || "(hanya foto)"}`;
+
+        if (file) {
+          const formData = new FormData();
+          formData.append("chat_id", CHAT_ID);
+          formData.append("caption", textTemplate);
+          formData.append("photo", file);
+
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+            method: "POST",
+            body: formData
+          });
+        } else {
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: CHAT_ID, text: textTemplate })
+          });
+        }
+
+        appendMessage("✅ Request berhasil dikirim!", "bot");
+      } catch (e) {
+        appendMessage("❌ Gagal mengirim request.", "bot");
+      }
+    }
+  </script>
+</body>
+  </html>
